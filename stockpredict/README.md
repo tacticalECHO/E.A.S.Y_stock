@@ -2,6 +2,8 @@
 
 use main.py to run the application
 
+What you need is the py files and the json file
+
 ## four function
 
 ### ***update data***
