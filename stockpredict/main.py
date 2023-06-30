@@ -282,8 +282,8 @@ class MainUi(QtWidgets.QMainWindow):
 
         except stock_filter.NoDataError:
             error_c.main(-2)
-        #except:
-            #error_c.main(-10)
+        except:
+            error_c.main(-10)
         finally:
             self.right_bar_widget_search_input2.setText('')
             self.right_bar_widget_search_input3.setText('')

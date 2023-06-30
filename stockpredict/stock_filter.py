@@ -35,7 +35,7 @@ def getDATE(filename):
     code=0
     DATE=CurveFind(filename,cfg['user_day'],cfg['user_k'])
     if(DATE):
-        code=filename.replace('.csv','')
+        code='\t'+filename.replace('.csv','')
     return code,DATE
 
 def writefile(curve):
