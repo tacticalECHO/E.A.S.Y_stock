@@ -2,11 +2,16 @@ import sys
 import pandas as pd
 from PyQt5.QtWidgets import QApplication, QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
+import os
 
 def read_out():
     df=pd.read_csv('./output/out.csv',converters={u'CODE':str})
     return df
-
+def read_out_chosen():
+    if (os.path.exists('./output/out_chosen.csv') == False):
+        return None
+    df=pd.read_csv('./output/out_chosen.csv',converters={u'CODE':str})
+    return df
 class pandasModel(QAbstractTableModel):
 
     def __init__(self, data):

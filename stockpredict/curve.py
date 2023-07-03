@@ -5,7 +5,8 @@ import datetime
 def CurveFind(filename,user_day=5,user_k=1.5):
     user_Day=int(user_day)
     user_K=float(user_k)
-    origin=pd.read_csv('./data/'+filename)
+    origin=pd.read_csv('./data/'+filename,index_col=None)
+    origin=origin.dropna(axis=0,how='any')
     if(origin.shape[0]<5+user_Day):
         return 0
     x=origin['日期'].iloc[-1]
@@ -71,13 +72,12 @@ def CurveFind(filename,user_day=5,user_k=1.5):
     def Compare(C,data_volume,user_K):
         checkpointlow=[]
         if(len(C)>3):
-            k1=C[len(C)-1]-C[len(C)-2]
-            k2=C[len(C)-2]-C[len(C)-3]
-            k_old=C[len(C)-2]-C[0]
+            k1=data_close.iloc[-1]-data_close.iloc[-2]
+            k_old=C[len(C)-1]-C[0]
             x1=data_volume.iloc[-1]
             x2=data_volume.iloc[-2]
-            if(k2<0 and k1>0 and k_old<0 and x1>=x2*user_K):
-                checkpointlow.append(len(C)-2)
+            if(k1>0 and k_old<0 and x1>=x2*user_K):
+                checkpointlow.append(len(C)-1)
             else:
                 pass
         return checkpointlow

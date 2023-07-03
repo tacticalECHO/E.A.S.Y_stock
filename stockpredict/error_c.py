@@ -26,5 +26,11 @@ def main(errcode):
         wor=QMessageBox.warning(None,'警告','输入不合法',QMessageBox.Yes|QMessageBox.Yes)
     elif(errcode==-10):
         wor=QMessageBox.warning(None,'警告','未知错误!',QMessageBox.Yes|QMessageBox.Yes)
+    elif(errcode==3):
+        wor=QMessageBox.information(None,'提示','导入成功!',QMessageBox.Yes|QMessageBox.Yes)
+    elif(errcode==-7):
+        wor=QMessageBox.warning(None,'警告','未导入文件!',QMessageBox.Yes|QMessageBox.Yes)
+    elif(errcode==-4):
+        wor=QMessageBox.warning(None,'警告','未选择文件!',QMessageBox.Yes|QMessageBox.Yes)
     else:
         return 0

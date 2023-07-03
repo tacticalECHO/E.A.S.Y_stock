@@ -16,7 +16,14 @@ import numpy as np
 import os
 import multiprocessing
 import json
+import choose_stock_filter
 class IllegalError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+class NoPathError(Exception):
     def __init__(self, message):
         self.message = message
 
@@ -252,6 +259,15 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget2.show()
         self.right_widget6.hide()
     def filter_data(self):
+        with open('cfg.json','r') as f:
+            cfg=json.load(f)
+            f.close()
+        path=cfg['path']
+        if(path==""):
+            self.show_path=QtWidgets.QLabel("路径未选择")
+        else:
+            self.show_path=QtWidgets.QLabel("路径："+path[0])
+        self.right_layout3.addWidget(self.show_path,3,0,1,5,QtCore.Qt.AlignCenter)
         self.right_widget4.hide()
         self.right_widget5.hide()
         self.right_widget2.hide()
@@ -272,6 +288,37 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget4.hide()
         self.right_widget5.hide()
         self.right_widget6.show()
+    def user_choose(self):
+        with open('cfg.json','r') as f:
+            cfg=json.load(f)
+            f.close()
+            path_o=cfg['path']
+            path=path_o[0].replace('/','\\')
+        try:
+            choose_stock_filter.main(path)
+        except FileNotFoundError:
+            error_c.main(-2)
+        except:
+            error_c.main(-7)
+    def input_data(self):
+        try:
+            with open('cfg.json','r') as f:
+                cfg=json.load(f)
+                day=cfg['user_day']
+                k=cfg['user_k']
+                f.close()
+            with open('cfg.json','w') as f:
+                path=choose_stock_filter.choose()
+                json.dump({'user_day':day,'user_k':k,'path':path},f)
+                f.close()
+                if(path[0]==""):
+                    raise NoPathError('未选择路径')
+                error_c.main(3)
+        except NoPathError:
+            error_c.main(-4)
+        except :
+            error_c.main(-10)
+        
     def filter(self):
         try:
             stock_filter.main()
@@ -285,10 +332,15 @@ class MainUi(QtWidgets.QMainWindow):
         except:
             error_c.main(-10)
         finally:
+            
             self.right_bar_widget_search_input2.setText('')
             self.right_bar_widget_search_input3.setText('')
+            with open('cfg.json','r') as f:
+                cfg=json.load(f)
+                x=cfg['path']
+                f.close()
             with open('cfg.json','w') as f:
-                json.dump({'user_day':5,'user_k':1.5},f)
+                json.dump({'user_day':5,'user_k':1.5,'path':x},f)
                 f.close()
         
     def storetext(self,text):
@@ -338,11 +390,28 @@ class MainUi(QtWidgets.QMainWindow):
         error_c.main(-300)
     def read_out(self):
         try:
+            self.model_chosenx=read_out_toUI.read_out_chosen()
+            if(self.model_chosenx.empty==False):
+                self.model_chosen=read_out_toUI.pandasModel(self.model_chosenx)
+                self.view_chosen = QTableView()
+                self.view_chosen.setModel(self.model_chosen)
+                self.view_chosen.resize(600, 1080)
+                self.print_table_chosen=QtWidgets.QLabel()
+                self.print_table_chosen.setText("自选股票")
+                self.print_table_chosen.setObjectName('print_table_chosen')
+                self.print_table_chosen.setFont(QtGui.QFont("SimSun",15,QtGui.QFont.Bold,True))
+                self.right_layout5.addWidget(self.print_table_chosen,2,7,1,6)
+                self.right_layout5.addWidget(self.view_chosen,3,7,12,6)
             self.model=read_out_toUI.pandasModel(read_out_toUI.read_out())
             self.view = QTableView()
             self.view.setModel(self.model)
             self.view.resize(600, 1080)
-            self.right_layout5.addWidget(self.view,2,0,12,12)
+            self.right_layout5.addWidget(self.view,3,0,12,6)
+            self.print_table=QtWidgets.QLabel()
+            self.print_table.setText("所有股票")
+            self.print_table.setObjectName('print_table')
+            self.print_table.setFont(QtGui.QFont("SimSun",15,QtGui.QFont.Bold,True))
+            self.right_layout5.addWidget(self.print_table,2,0,1,6)
             self.right_widget4.hide()
             self.right_widget.hide()
             self.right_widget3.hide()
@@ -378,7 +447,7 @@ class MainUi(QtWidgets.QMainWindow):
             self._endPos = None 
     def init_ui(self):
         self.setEnabled(True)
-        
+        self.setWindowIcon(QtGui.QIcon('./pic/logo.png'))
         self.setMinimumSize(1300, 900)
         self.setWindowTitle('EasyStock分析系统')
         self.main_widget = QtWidgets.QWidget() 
@@ -401,7 +470,6 @@ class MainUi(QtWidgets.QMainWindow):
         self.setCentralWidget(self.main_widget) 
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0,0,0,0)
-        #self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowOpacity(0.9) 
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground) 
     def init_left(self):
@@ -417,6 +485,8 @@ class MainUi(QtWidgets.QMainWindow):
         self.left_print.setObjectName('show_data')
         self.left_search = QtWidgets.QPushButton(qtawesome.icon('fa.search',color='white'),"预测股票")
         self.left_search.setObjectName('search_data')
+        self.left_input = QtWidgets.QPushButton(qtawesome.icon('fa.table',color='white'),"导入数据")
+        self.left_input.setObjectName('input_data')
         self.left_help= QtWidgets.QPushButton(qtawesome.icon('fa.question',color='white'),"帮助")
         self.left_help.setObjectName('help')
         self.left_exit = QtWidgets.QPushButton(qtawesome.icon('fa.sign-out',color='white'),"退出")
@@ -425,10 +495,12 @@ class MainUi(QtWidgets.QMainWindow):
         self.left_layout.addWidget(self.left_filter, 1, 0,1,1)
         self.left_layout.addWidget(self.left_print, 2, 0, 1, 1)
         self.left_layout.addWidget(self.left_search, 3, 0, 1, 1)
-        self.left_layout.addWidget(self.left_exit, 5, 0, 1, 1)
-        self.left_layout.addWidget(self.left_help, 4, 0, 1, 1)
+        self.left_layout.addWidget(self.left_input, 4, 0, 1, 1)
+        self.left_layout.addWidget(self.left_exit, 6, 0, 1, 1)
+        self.left_layout.addWidget(self.left_help, 5, 0, 1, 1)
         self.left_exit.clicked.connect(self.sys_exit)
         self.left_update.clicked.connect(self.update_data)
+        self.left_input.clicked.connect(self.input_data)
         self.left_widget.setStyleSheet('''
     QPushButton{border:none;color:white;}
     QPushButton#left_label{
@@ -449,7 +521,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget.setObjectName('right_widget')
         self.right_layout = QtWidgets.QGridLayout()
         self.right_widget.setLayout(self.right_layout) 
-        self.right_print=QtWidgets.QLabel("欢迎使用E.A.S.Y stock v1.1")
+        self.right_print=QtWidgets.QLabel("欢迎使用E.A.S.Y stock v1.2")
         self.right_print.setFont(QtGui.QFont("Microsoft YaHei",40,QtGui.QFont.Bold,True))
         self.right_print.setStyleSheet("color:black")
         self.right_layout.addWidget(self.right_print,0,0,1,1)
@@ -457,6 +529,9 @@ class MainUi(QtWidgets.QMainWindow):
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
@@ -493,6 +568,9 @@ class MainUi(QtWidgets.QMainWindow):
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
@@ -520,8 +598,10 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_bar_widget_search_input3.textChanged.connect(self.storetext3)
         self.right_bar_widget_search_input3.editingFinished.connect(self.changeuser_k)
         self.right_bar_widget_search_input3.setPlaceholderText("输入量比k值（正数）")
+        self.rigt_user_choose=QtWidgets.QPushButton("自选筛选")
+        self.rigt_user_choose.clicked.connect(self.user_choose)
         self.right_print3.setStyleSheet("color:black")
-        self.right_confirm3=QtWidgets.QPushButton("确认")
+        self.right_confirm3=QtWidgets.QPushButton("所有筛选")
         self.right_confirm3.clicked.connect(self.filter)
         self.right_confirm3.setObjectName('confirm')
         self.right_layout3.addWidget(self.right_confirm3,6,0,1,1,QtCore.Qt.AlignBottom)
@@ -534,10 +614,14 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_layout3.addWidget(self.right_bar_widget_search_input2,1,1,1,8)
         self.right_layout3.addWidget(self.search_k,2,0,1,1)
         self.right_layout3.addWidget(self.right_bar_widget_search_input3,2,1,1,8)
+        self.right_layout3.addWidget(self.rigt_user_choose,3,0,1,1,QtCore.Qt.AlignBottom)
         self.right_widget3.setStyleSheet('''
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
@@ -569,6 +653,9 @@ class MainUi(QtWidgets.QMainWindow):
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
@@ -602,6 +689,9 @@ class MainUi(QtWidgets.QMainWindow):
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
@@ -629,6 +719,9 @@ class MainUi(QtWidgets.QMainWindow):
     QWidget#right_widget{
         color:#232C51;
         background:white;
+        background-image:url(./pic/background2.png);
+        background-repeat:no-repeat;
+        background-position:center;
 
     }
     QLabel#right_lable{
