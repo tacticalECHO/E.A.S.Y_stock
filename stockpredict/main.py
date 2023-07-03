@@ -267,7 +267,7 @@ class MainUi(QtWidgets.QMainWindow):
             self.show_path=QtWidgets.QLabel("路径未选择")
         else:
             self.show_path=QtWidgets.QLabel("路径："+path[0])
-        self.right_layout3.addWidget(self.show_path,3,0,1,5,QtCore.Qt.AlignCenter)
+        self.right_layout3.addWidget(self.show_path,3,0,1,5)
         self.right_widget4.hide()
         self.right_widget5.hide()
         self.right_widget2.hide()
@@ -289,15 +289,23 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget5.hide()
         self.right_widget6.show()
     def user_choose(self):
-        with open('cfg.json','r') as f:
-            cfg=json.load(f)
-            f.close()
-            path_o=cfg['path']
-            path=path_o[0].replace('/','\\')
         try:
-            choose_stock_filter.main(path)
+            with open('cfg.json','r') as f:
+                cfg=json.load(f)
+                f.close()
+                path_o=cfg['path']
+                path=path_o[0].replace('/','\\')
+                if(path==""):
+                    raise NoPathError('未选择路径') from None
+                choose_stock_filter.main(path)
         except FileNotFoundError:
             error_c.main(-2)
+        except stock_filter.NoDataError:
+            error_c.main(-8)
+        except NoPathError:
+            error_c.main(-4)
+        except stock_filter.NoCurveError:
+            error_c.main(-5)
         except:
             error_c.main(-7)
     def input_data(self):
@@ -306,6 +314,7 @@ class MainUi(QtWidgets.QMainWindow):
                 cfg=json.load(f)
                 day=cfg['user_day']
                 k=cfg['user_k']
+                x=cfg['path']
                 f.close()
             with open('cfg.json','w') as f:
                 path=choose_stock_filter.choose()
@@ -316,8 +325,21 @@ class MainUi(QtWidgets.QMainWindow):
                 error_c.main(3)
         except NoPathError:
             error_c.main(-4)
+        except stock_filter.NoDataError:
+            error_c.main(-8)
+            with open('cfg.json','w') as f:
+                json.dump({'user_day':day,'user_k':k,'path':""},f)
+                f.close()
+        except FileNotFoundError:
+            error_c.main(-4)
+            with open('cfg.json','w') as f:
+                json.dump({'user_day':day,'user_k':k,'path':""},f)
+                f.close()
         except :
             error_c.main(-10)
+            with open('cfg.json','w') as f:
+                json.dump({'user_day':day,'user_k':k,'path':""},f)
+                f.close()
         
     def filter(self):
         try:
@@ -614,7 +636,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_layout3.addWidget(self.right_bar_widget_search_input2,1,1,1,8)
         self.right_layout3.addWidget(self.search_k,2,0,1,1)
         self.right_layout3.addWidget(self.right_bar_widget_search_input3,2,1,1,8)
-        self.right_layout3.addWidget(self.rigt_user_choose,3,0,1,1,QtCore.Qt.AlignBottom)
+        self.right_layout3.addWidget(self.rigt_user_choose,4,0,1,1)
         self.right_widget3.setStyleSheet('''
     QWidget#right_widget{
         color:#232C51;

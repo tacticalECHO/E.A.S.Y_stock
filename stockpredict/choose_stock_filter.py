@@ -5,16 +5,20 @@ from curve import CurveFind
 import pandas as pd
 import json
 from stock_filter import NoCurveError
+from stock_filter import NoDataError
 with open('./cfg.json','r') as f:
     cfg=json.load(f)
     f.close()
 def choose():
     path=QFileDialog.getOpenFileName(None,'选择文件','./','csv,excel(*.csv *.xlsx)')
+    df=pd.read_excel(path[0],converters={0:str},header=None)
+    if(df.empty==True):
+        raise NoDataError('无数据！') from None
     return path
 def getfilename(path):
     if(path==''):
         return
-    filename=pd.read_excel(path,converters={0:str})
+    filename=pd.read_excel(path,header=None,converters={0:str})
     filename=filename.iloc[:,0]
     return filename
 def getDATE(filename):
@@ -41,8 +45,6 @@ def writefile(curve):
     a.to_csv('./output/out_chosen.csv',encoding='utf-8',index=None)
 def main(path):
     filelist=getfilename(path)
-    if(filelist is None):
-        return
     if(os.path.exists('./output')==False):
         os.mkdir('./output')
     pool=multiprocessing.Pool()

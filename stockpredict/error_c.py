@@ -32,5 +32,7 @@ def main(errcode):
         wor=QMessageBox.warning(None,'警告','未导入文件!',QMessageBox.Yes|QMessageBox.Yes)
     elif(errcode==-4):
         wor=QMessageBox.warning(None,'警告','未选择文件!',QMessageBox.Yes|QMessageBox.Yes)
+    elif(errcode==-8):
+        wor=QMessageBox.warning(None,'警告','导入文件为空!',QMessageBox.Yes|QMessageBox.Yes)
     else:
         return 0
