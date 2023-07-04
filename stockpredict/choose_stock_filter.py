@@ -50,6 +50,7 @@ def main(path):
     pool=multiprocessing.Pool()
     curve=pool.map(getDATE,filelist)
     pool.close()
+    pool.join()
     writefile(curve)
 if __name__=='__main__':
     Qt=QApplication([])

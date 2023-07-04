@@ -9,7 +9,7 @@ def read_out():
     return df
 def read_out_chosen():
     if (os.path.exists('./output/out_chosen.csv') == False):
-        return None
+        return 0
     df=pd.read_csv('./output/out_chosen.csv',converters={u'CODE':str})
     return df
 class pandasModel(QAbstractTableModel):

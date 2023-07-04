@@ -264,9 +264,9 @@ class MainUi(QtWidgets.QMainWindow):
             f.close()
         path=cfg['path']
         if(path==""):
-            self.show_path=QtWidgets.QLabel("路径未选择")
+            self.show_path.setText("路径：未选择")
         else:
-            self.show_path=QtWidgets.QLabel("路径："+path[0])
+            self.show_path.setText("路径："+path[0])
         self.right_layout3.addWidget(self.show_path,3,0,1,5)
         self.right_widget4.hide()
         self.right_widget5.hide()
@@ -298,6 +298,7 @@ class MainUi(QtWidgets.QMainWindow):
                 if(path==""):
                     raise NoPathError('未选择路径') from None
                 choose_stock_filter.main(path)
+                error_c.main(2)
         except FileNotFoundError:
             error_c.main(-2)
         except stock_filter.NoDataError:
@@ -413,7 +414,7 @@ class MainUi(QtWidgets.QMainWindow):
     def read_out(self):
         try:
             self.model_chosenx=read_out_toUI.read_out_chosen()
-            if(self.model_chosenx.empty==False):
+            if(type(self.model_chosenx)!=int):
                 self.model_chosen=read_out_toUI.pandasModel(self.model_chosenx)
                 self.view_chosen = QTableView()
                 self.view_chosen.setModel(self.model_chosen)
@@ -492,7 +493,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.setCentralWidget(self.main_widget) 
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0,0,0,0)
-        self.setWindowOpacity(0.9) 
+        #self.setWindowOpacity(0.9) 
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground) 
     def init_left(self):
         self.left_widget = QtWidgets.QWidget()  
@@ -630,6 +631,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_cancel3=QtWidgets.QPushButton("取消")
         self.right_cancel3.clicked.connect(self.cancel)
         self.right_cancel3.setObjectName('cancel')
+        self.show_path=QtWidgets.QLabel()
         self.right_layout3.addWidget(self.right_cancel3,6,5,1,3,QtCore.Qt.AlignBottom)
         self.right_layout3.addWidget(self.right_print3,0,0,1,1,QtCore.Qt.AlignTop)
         self.right_layout3.addWidget(self.search_day,1,0,1,1)

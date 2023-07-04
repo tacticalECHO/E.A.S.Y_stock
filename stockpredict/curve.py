@@ -11,14 +11,14 @@ def CurveFind(filename,user_day=5,user_k=1.5):
         return 0
     x=origin['日期'].iloc[-1]
     end_time=datetime.datetime.now()
-    TooOld=end_time-datetime.timedelta(days=5)
-    xend_time=TooOld.strftime('%Y%m%d')
+    TooOld=end_time-datetime.timedelta(days=7)
+    xend_time=TooOld.strftime('%Y%#m%#d')
     for i in x:
-        if(i=='-'):
+        if(i=='/'):
             x=x.replace(i,'')
     if(x<=xend_time):
         return 0
-    last=origin[:-1].index.stop
+    last=origin.shape[0]
     data=origin.iloc[last-user_Day:last]
     data_close=data['收盘']
     data_index=data['日期'].index
