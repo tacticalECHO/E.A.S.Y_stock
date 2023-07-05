@@ -30,10 +30,13 @@ def get_k():
             end_date=Olddate
             gx=ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start_date, end_date=end_date, adjust="")
             gx.drop(['涨跌额','成交额','振幅'], axis=1, inplace=True)
+            gx=gx.iloc[1:,:]
+            if(gx.empty):
+                continue
             y=gx.iloc[-1]           
-            
+
             if(x.iloc[0]==y.iloc[0]):
-                1
+                continue
             else:
                 df=df._append(gx)
                 df.to_csv(f'./data/{code}.csv', encoding='utf-8-sig', index=None)
