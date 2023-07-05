@@ -17,6 +17,8 @@ import os
 import multiprocessing
 import json
 import choose_stock_filter
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 class IllegalError(Exception):
     def __init__(self, message):
         self.message = message
@@ -470,7 +472,7 @@ class MainUi(QtWidgets.QMainWindow):
             self._endPos = None 
     def init_ui(self):
         self.setEnabled(True)
-        self.setWindowIcon(QtGui.QIcon('./pic/logo.png'))
+        self.setWindowIcon(QtGui.QIcon('./pic/logo_white_bg.png'))
         self.setMinimumSize(1300, 900)
         self.setWindowTitle('EasyStock分析系统')
         self.main_widget = QtWidgets.QWidget() 
