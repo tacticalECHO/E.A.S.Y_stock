@@ -1,4 +1,4 @@
-# E.A.S.Y stock system_v1.1
+# E.A.S.Y stock system_v1.2
 
 use main.py to run the application
 
