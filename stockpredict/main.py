@@ -219,7 +219,7 @@ class MainUi(QtWidgets.QMainWindow):
         elif(ud.isdigit()!=True):
             error_c.main(-6)
             return
-        elif(int(ud)<=0):
+        elif(int(ud)<=4):
             error_c.main(-6)
             return
         with open('cfg.json','r') as f:
@@ -617,7 +617,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_bar_widget_search_input2.setObjectName('right_bar_widget_search_input2')
         self.right_bar_widget_search_input2.textChanged.connect(self.storetext2)
         self.right_bar_widget_search_input2.editingFinished.connect(self.changeuser_day)
-        self.right_bar_widget_search_input2.setPlaceholderText("输入数据天数（正整数）")
+        self.right_bar_widget_search_input2.setPlaceholderText("输入数据天数（大于5）")
         self.right_bar_widget_search_input3 = QtWidgets.QLineEdit()
         self.right_bar_widget_search_input3.setObjectName('right_bar_widget_search_input3')
         self.right_bar_widget_search_input3.textChanged.connect(self.storetext3)

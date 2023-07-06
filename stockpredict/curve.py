@@ -12,19 +12,20 @@ def CurveFind(filename,user_day=5,user_k=1.5):
     x=origin['日期'].iloc[-1]
     end_time=datetime.datetime.now()
     TooOld=end_time-datetime.timedelta(days=7)
-    xend_time=TooOld.strftime('%Y%#m%#d')
+    xend_time=TooOld.strftime('%Y%m%d')
     for i in x:
-        if(i=='/'):
+        if(i=='-'):
             x=x.replace(i,'')
     if(x<=xend_time):
         return 0
     last=origin.shape[0]
-    data=origin.iloc[last-user_Day:last]
+    data=origin.iloc[last-user_Day-2:last]
     data_close=data['收盘']
     data_index=data['日期'].index
     data_volume=data['成交量']
+    data_use=data_close.drop(data_index[-1],axis=0)
     x=np.array(data_index)
-    y=np.array(data_close)
+    y=np.array(data_use)
     x_diff=[]
     y_diff=[]
     m_diff=[]
@@ -71,9 +72,9 @@ def CurveFind(filename,user_day=5,user_k=1.5):
 
     def Compare(C,data_volume,user_K):
         checkpointlow=[]
-        if(len(C)>3):
-            k1=data_close.iloc[-1]-data_close.iloc[-2]
+        if(len(C)>=3):
             k_old=C[len(C)-1]-C[0]
+            k1=data_close.iloc[-1]-data_close.iloc[-2]
             x1=data_volume.iloc[-1]
             x2=data_volume.iloc[-2]
             if(k1>0 and k_old<0 and x1>=x2*user_K):
