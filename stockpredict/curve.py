@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sympy import symbols, diff
 import datetime
-def CurveFind(filename,user_day=5,user_k=1.5):
+def CurveFind(filename,user_day=5,user_k=1):
     user_Day=int(user_day)
     user_K=float(user_k)
     origin=pd.read_csv('./data/'+filename,index_col=None)

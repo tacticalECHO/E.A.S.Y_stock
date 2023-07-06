@@ -365,7 +365,7 @@ class MainUi(QtWidgets.QMainWindow):
                 x=cfg['path']
                 f.close()
             with open('cfg.json','w') as f:
-                json.dump({'user_day':5,'user_k':1.5,'path':x},f)
+                json.dump({'user_day':5,'user_k':1,'path':x},f)
                 f.close()
         
     def storetext(self,text):
@@ -612,7 +612,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_print3=QtWidgets.QLabel("筛选数据")
         self.right_print3.setFont(QtGui.QFont("Microsoft YaHei",30,QtGui.QFont.Bold,True))
         self.search_day=QtWidgets.QLabel("数据天数--默认为5天")
-        self.search_k=QtWidgets.QLabel("量比K值--默认为1.5")
+        self.search_k=QtWidgets.QLabel("量比K值--默认为1")
         self.right_bar_widget_search_input2 = QtWidgets.QLineEdit()
         self.right_bar_widget_search_input2.setObjectName('right_bar_widget_search_input2')
         self.right_bar_widget_search_input2.textChanged.connect(self.storetext2)
