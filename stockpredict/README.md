@@ -37,3 +37,10 @@ The buttom is to print the result of filtrate stock
 ### ***Predict stock***
 Use math model to predict the next close price of one stock (use the at least 50 days data)
 
+
+
+UPDATE 7/13/2023
+
+## The example of stock that my programe filtrated
+
+![example](./example.png "the inflection point appeared in 7/7/22023")

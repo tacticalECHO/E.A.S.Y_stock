@@ -64,7 +64,7 @@ def CurveFind(filename,user_day=5,user_k=1):
         return Ddiffx
 
     def Curve():
-        Ddiff=diffbalance(10,m_diff,y_diff)
+        Ddiff=diffbalance(1,m_diff,y_diff)
         A=np.array(Ddiff,dtype='float64')
         B=np.array(y,dtype='float64')
         C=np.linalg.solve(A,B)
