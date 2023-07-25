@@ -583,7 +583,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget.setObjectName('right_widget')
         self.right_layout = QtWidgets.QGridLayout()
         self.right_widget.setLayout(self.right_layout) 
-        self.right_print=QtWidgets.QLabel("欢迎使用E.A.S.Y stock v1.2")
+        self.right_print=QtWidgets.QLabel("欢迎使用E.A.S.Y stock v1.3")
         self.right_print.setFont(QtGui.QFont("Microsoft YaHei",40,QtGui.QFont.Bold,True))
         self.right_print.setStyleSheet("color:black")
         self.right_layout.addWidget(self.right_print,0,0,1,1)
