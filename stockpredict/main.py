@@ -365,9 +365,28 @@ class MainUi(QtWidgets.QMainWindow):
                 x=cfg['path']
                 f.close()
             with open('cfg.json','w') as f:
-                json.dump({'user_day':5,'user_k':1,'path':x},f)
+                json.dump({'user_day':5,'user_k':0.8,'path':x},f)
                 f.close()
-        
+    def filter_weekly(self):
+        try:
+            stock_filter.main_weekly()
+            error_c.main(2)
+        except stock_filter.NoCurveError:
+            error_c.main(-5)
+        except stock_filter.NoDataError:
+            error_c.main(-2)
+        except:
+            error_c.main(-10)
+        finally:
+            self.right_bar_widget_search_input2.setText('')
+            self.right_bar_widget_search_input3.setText('')
+            with open('cfg.json','r') as f:
+                cfg=json.load(f)
+                x=cfg['path']
+                f.close()
+            with open('cfg.json','w') as f:
+                json.dump({'user_day':5,'user_k':0.8,'path':x},f)
+                f.close()
     def storetext(self,text):
         self.text=text
     def predict(self):
@@ -425,15 +444,25 @@ class MainUi(QtWidgets.QMainWindow):
                 self.print_table_chosen.setText("自选股票")
                 self.print_table_chosen.setObjectName('print_table_chosen')
                 self.print_table_chosen.setFont(QtGui.QFont("SimSun",15,QtGui.QFont.Bold,True))
-                self.right_layout5.addWidget(self.print_table_chosen,2,7,1,6)
-                self.right_layout5.addWidget(self.view_chosen,3,7,12,6)
+                self.right_layout5.addWidget(self.print_table_chosen,2,2,1,6)
+                self.right_layout5.addWidget(self.view_chosen,3,2,12,1)
             self.model=read_out_toUI.pandasModel(read_out_toUI.read_out())
+            self.model_weekly=read_out_toUI.pandasModel(read_out_toUI.read_out_weekly())
+            self.view_weekly = QTableView()
+            self.view_weekly.setModel(self.model_weekly)
+            #self.view_weekly.resize(600, 1080)
+            self.print_table_weekly=QtWidgets.QLabel()
+            self.print_table_weekly.setText("所有股票周线")
+            self.print_table_weekly.setObjectName('print_table_weekly')
+            self.print_table_weekly.setFont(QtGui.QFont("SimSun",15,QtGui.QFont.Bold,True))
+            self.right_layout5.addWidget(self.print_table_weekly,2,1,1,6)
+            self.right_layout5.addWidget(self.view_weekly,3,1,12,1)
             self.view = QTableView()
             self.view.setModel(self.model)
-            self.view.resize(600, 1080)
-            self.right_layout5.addWidget(self.view,3,0,12,6)
+            self.view.resize(300, 1080)
+            self.right_layout5.addWidget(self.view,3,0,12,1)
             self.print_table=QtWidgets.QLabel()
-            self.print_table.setText("所有股票")
+            self.print_table.setText("所有股票日线")
             self.print_table.setObjectName('print_table')
             self.print_table.setFont(QtGui.QFont("SimSun",15,QtGui.QFont.Bold,True))
             self.right_layout5.addWidget(self.print_table,2,0,1,6)
@@ -452,6 +481,14 @@ class MainUi(QtWidgets.QMainWindow):
         try:
             sys.stderr = open(os.devnull, 'w')
             stockget.get_k()
+            sys.stderr = sys.__stderr__
+            error_c.main(1)
+        except:
+            error_c.main(-1)
+    def getdata_weekly(self):
+        try:
+            sys.stderr = open(os.devnull, 'w')
+            stockget.get_k_weekly()
             sys.stderr = sys.__stderr__
             error_c.main(1)
         except:
@@ -573,9 +610,13 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_print2=QtWidgets.QLabel("更新数据")
         self.right_commit=QtWidgets.QLabel("数据更新较慢请耐心等待")
         self.right_commit.setFont(QtGui.QFont("Microsoft YaHei",20,QtGui.QFont.Bold,True))
-        self.right_confirm=QtWidgets.QPushButton("确认")
+        self.right_confirm=QtWidgets.QPushButton("日数据获取")
         self.right_confirm.clicked.connect(self.getdata)
         self.right_confirm.setObjectName('confirm')
+        self.right_confirm_weekly=QtWidgets.QPushButton("周数据获取")
+        self.right_confirm_weekly.clicked.connect(self.getdata_weekly)
+        self.right_confirm_weekly.setObjectName('confirm')
+        self.right_layout2.addWidget(self.right_confirm_weekly,3,1,1,1,QtCore.Qt.AlignCenter)
         self.right_layout2.addWidget(self.right_confirm,3,0,1,1,QtCore.Qt.AlignCenter)
         self.right_cancel=QtWidgets.QPushButton("取消")
         self.right_cancel.clicked.connect(self.cancel)
@@ -583,8 +624,8 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_clear=QtWidgets.QPushButton("清除")
         self.right_clear.clicked.connect(self.clear)
         self.right_clear.setObjectName('clear')
-        self.right_layout2.addWidget(self.right_clear,3,2,1,1,QtCore.Qt.AlignCenter)
-        self.right_layout2.addWidget(self.right_cancel,3,1,1,1,QtCore.Qt.AlignCenter)
+        self.right_layout2.addWidget(self.right_clear,3,3,1,1,QtCore.Qt.AlignCenter)
+        self.right_layout2.addWidget(self.right_cancel,3,2,1,1,QtCore.Qt.AlignCenter)
         self.right_print2.setFont(QtGui.QFont("Microsoft YaHei",30,QtGui.QFont.Bold,True))
         self.right_print2.setStyleSheet("color:black")
         self.right_layout2.addWidget(self.right_print2,0,0,1,1,QtCore.Qt.AlignCenter)
@@ -612,7 +653,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_print3=QtWidgets.QLabel("筛选数据")
         self.right_print3.setFont(QtGui.QFont("Microsoft YaHei",30,QtGui.QFont.Bold,True))
         self.search_day=QtWidgets.QLabel("数据天数--默认为5天")
-        self.search_k=QtWidgets.QLabel("量比K值--默认为1")
+        self.search_k=QtWidgets.QLabel("量比K值--默认为0.8")
         self.right_bar_widget_search_input2 = QtWidgets.QLineEdit()
         self.right_bar_widget_search_input2.setObjectName('right_bar_widget_search_input2')
         self.right_bar_widget_search_input2.textChanged.connect(self.storetext2)
@@ -626,10 +667,14 @@ class MainUi(QtWidgets.QMainWindow):
         self.rigt_user_choose=QtWidgets.QPushButton("自选筛选")
         self.rigt_user_choose.clicked.connect(self.user_choose)
         self.right_print3.setStyleSheet("color:black")
-        self.right_confirm3=QtWidgets.QPushButton("所有筛选")
+        self.right_confirm3=QtWidgets.QPushButton("所有筛选-日线")
         self.right_confirm3.clicked.connect(self.filter)
         self.right_confirm3.setObjectName('confirm')
         self.right_layout3.addWidget(self.right_confirm3,6,0,1,1,QtCore.Qt.AlignBottom)
+        self.right_confirm4=QtWidgets.QPushButton("所有筛选-周线")
+        self.right_confirm4.clicked.connect(self.filter_weekly)
+        self.right_confirm4.setObjectName('confirm')
+        self.right_layout3.addWidget(self.right_confirm4,6,1,1,1,QtCore.Qt.AlignBottom)
         self.right_cancel3=QtWidgets.QPushButton("取消")
         self.right_cancel3.clicked.connect(self.cancel)
         self.right_cancel3.setObjectName('cancel')
@@ -669,7 +714,7 @@ class MainUi(QtWidgets.QMainWindow):
         self.right_widget5=QtWidgets.QWidget() 
         self.right_widget5.setObjectName('right_widget')
         self.right_layout5 = QtWidgets.QGridLayout()
-        self.right_print5=QtWidgets.QLabel("筛选结果")
+        self.right_print5=QtWidgets.QLabel("筛选结果(日线----周线)")
         self.right_print5.setFont(QtGui.QFont("Microsoft YaHei",30,QtGui.QFont.Bold,True))
         self.right_print5.setStyleSheet("color:black")
         self.right_widget5.setLayout(self.right_layout5)

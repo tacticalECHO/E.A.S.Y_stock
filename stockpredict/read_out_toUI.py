@@ -12,6 +12,9 @@ def read_out_chosen():
         return 0
     df=pd.read_csv('./output/out_chosen.csv',converters={u'CODE':str})
     return df
+def read_out_weekly():
+    df=pd.read_csv('./output/out_weekly.csv',converters={u'CODE':str})
+    return df
 class pandasModel(QAbstractTableModel):
 
     def __init__(self, data):
