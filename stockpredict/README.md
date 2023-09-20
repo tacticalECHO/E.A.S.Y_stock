@@ -1,4 +1,4 @@
-# E.A.S.Y stock system_v1.2
+# E.A.S.Y stock system_v1.3
 
 use main.py to run the application
 
@@ -43,4 +43,4 @@ UPDATE 7/13/2023
 
 ## The example of stock that my programe filtrated
 
-![example](./data_pic/example.png"the inflection point appeared in 7/7/22023")
+![example](./data_pic/example.png "the inflection point appeared in 7/7/22023")
