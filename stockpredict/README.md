@@ -44,3 +44,9 @@ UPDATE 7/13/2023
 ## The example of stock that my programe filtrated
 
 ![example](./data_pic/example.png "the inflection point appeared in 7/7/22023")
+
+## The test report
+
+![test1](./pic/test_report.png)
+
+![test2](./pic/test2.png)
